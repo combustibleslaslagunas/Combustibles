@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventario Combustibles</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f8f8f6;--bg3:#f2f2f0;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+  --border:#e0e0dc;--border2:#c8c8c4;
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-t:#0C447C;
+  --green:#3B6D11;--green-l:#EAF3DE;--green-t:#27500A;
+  --amber:#854F0B;--amber-l:#FAEEDA;
+  --purple:#534AB7;--purple-l:#EEEDFE;
+  --red:#A32D2D;--red-l:#FCEBEB;
+  --radius:10px;--radius-sm:7px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+    --text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;
+    --border:#3a3a3c;--border2:#48484a;
+    --blue:#4A9EE0;--blue-l:#0c2a44;--blue-t:#85c1f0;
+    --green:#6DB33F;--green-l:#1a3008;--green-t:#a0d878;
+    --amber:#E0A030;--amber-l:#3a2800;
+    --purple:#9B8FE8;--purple-l:#1e1a4a;
+    --red:#E06060;--red-l:#3a1010;
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:var(--text);background:var(--bg3);min-height:100vh}
+
+/* NAV */
+.nav-bar{background:var(--bg);border-bottom:1px solid var(--border);padding:0 1rem;position:sticky;top:0;z-index:100}
+.nav-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:52px}
+.app-logo{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap}
+.app-logo span{color:var(--blue)}
+.nav-tabs{display:flex;gap:2px;margin-left:auto}
+.nav-tabs button{padding:6px 14px;border:none;background:transparent;border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;font-weight:400;transition:all .15s}
+.nav-tabs button.active{background:var(--blue-l);color:var(--blue);font-weight:600}
+.nav-tabs button:hover:not(.active){background:var(--bg2)}
+
+/* MAIN */
+.main{max-width:720px;margin:0 auto;padding:1.25rem 1rem}
+
+/* CARDS */
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.card-icon{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.card-title{font-size:16px;font-weight:600;color:var(--text)}
+.card-sub{font-size:13px;color:var(--text3);margin-top:1px}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block}
+
+/* FORM */
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{
+  width:100%;padding:10px 12px;
+  border:1px solid var(--border2);border-radius:var(--radius-sm);
+  font-size:15px;background:var(--bg);color:var(--text);outline:none;
+  -webkit-appearance:none;appearance:none;transition:border .15s
+}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12)}
+.field input[readonly]{background:var(--bg2);color:var(--text2)}
+.field textarea{resize:vertical;min-height:72px;line-height:1.5}
+.field-hint{font-size:11px;color:var(--text3);margin-top:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:480px){.row2,.row3{grid-template-columns:1fr}}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:1.25rem 0}
+.divider-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;text-align:center;margin:-0.6rem 0 1rem;background:var(--bg);display:inline-block;padding:0 10px;position:relative;left:50%;transform:translateX(-50%)}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
+.btn-primary:hover{background:var(--blue-t)}
+.btn-primary:active{transform:scale(.99)}
+.btn-secondary{width:100%;padding:11px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;transition:all .15s}
+.btn-secondary:hover{background:var(--bg2)}
+
+/* ALERTS */
+.alert{display:none;padding:11px 14px;border-radius:var(--radius-sm);font-size:14px;margin-bottom:1rem;align-items:center;gap:8px;border:1px solid}
+.alert.show{display:flex}
+.alert-success{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.alert-error{background:var(--red-l);color:var(--red);border-color:var(--red)}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.kpi{background:var(--bg2);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--border)}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.kpi-val{font-size:24px;font-weight:700;color:var(--text);line-height:1}
+.kpi-sub{font-size:12px;color:var(--text3);margin-top:4px}
+.kpi-blue .kpi-val{color:var(--blue)}
+.kpi-green .kpi-val{color:var(--green)}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-bar select{flex:1;min-width:140px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;background:var(--bg);color:var(--text);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;-webkit-appearance:none;padding-right:30px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:500px}
+thead th{padding:10px 12px;background:var(--bg2);font-size:11px;font-weight:700;color:var(--text2);text-align:left;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--bg2)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.badge-ing{background:var(--blue-l);color:var(--blue)}
+.badge-con{background:var(--green-l);color:var(--green)}
+.td-right{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.empty-state{padding:3rem 1rem;text-align:center;color:var(--text3);font-size:14px}
+
+/* EXPORT PANEL */
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem}
+.export-btn{padding:12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s}
+.export-btn:hover{background:var(--bg3);border-color:var(--blue)}
+.export-btn .export-icon{font-size:22px;margin-bottom:4px}
+.export-btn .export-label{font-size:13px;font-weight:600;color:var(--text)}
+.export-btn .export-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* INSTRUCCIONES */
+.steps{counter-reset:step}
+.step{display:flex;gap:12px;margin-bottom:1rem;align-items:flex-start}
+.step-num{min-width:26px;height:26px;border-radius:50%;background:var(--blue-l);color:var(--blue);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.5}
+.step-code{font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 12px;font-size:13px;color:var(--blue);margin-top:6px;word-break:break-all}
+.tip{background:var(--amber-l);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--amber);margin-bottom:1rem}
+
+/* FOOTER */
+.footer{text-align:center;font-size:12px;color:var(--text3);padding:2rem 1rem;margin-top:1rem}
+</style>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <div class="app-logo">⛽ <span>Combustibles</span></div>
+    <div class="nav-tabs">
+      <button class="active" onclick="showTab('ing',this)">Ingreso</button>
+      <button onclick="showTab('con',this)">Consumo</button>
+      <button onclick="showTab('res',this)">Registros</button>
+      <button onclick="showTab('guia',this)">Guía</button>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div id="alert-ok" class="alert alert-success">✓ <span id="alert-text">Guardado correctamente.</span></div>
+  <div id="alert-err" class="alert alert-error">✗ <span id="alert-err-text">Error.</span></div>
+
+  <!-- ═══════════ INGRESO ═══════════ -->
+  <div id="tab-ing" class="section active">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--blue-l);font-size:20px">📥</div>
+        <div><div class="card-title">Nuevo ingreso de combustible</div><div class="card-sub">Compra con guía y factura</div></div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Fecha factura *</label><input type="date" id="i-fecha"></div>
+        <div class="field"><label>Empresa *</label>
+          <select id="i-empresa">
+            <option value="">Seleccionar...</option>
+            <option>PICKERS ALIMENTOS LTDA</option>
+            <option>AGRICOLA LOS BELLOTOS</option>
+            <option>INVERSIONES ACCOR LTDA</option>
+            <option>JUAN PABLO ACUÑA</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>N° Guía</label><input type="text" id="i-guia" placeholder="G-0001"></div>
+        <div class="field"><label>N° Factura</label><input type="text" id="i-factura" placeholder="F-2025-001"></div>
+      </div>
+
+      <div class="field"><label>Proveedor</label>
+        <select id="i-proveedor">
+          <option value="">Seleccionar...</option>
+          <option>ESTACION DE SERVICIOS MIGUEL ARMANDO CARVACHO</option>
+          <option>COMERCIAL Y DISTRIBUIDORA DE COMBUSTIBLE RABALME LIMITADA</option>
+          <option>COPEC</option>
+          <option>SHELL</option>
+          <option>OTRO</option>
+        </select>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Tipo combustible *</label>
+          <select id="i-tipo">
+            <option value="">Seleccionar...</option>
+            <option>DIESEL</option>
+            <option>GASOLINA 93</option>
+            <option>GASOLINA 95</option>
+            <option>GASOLINA 97</option>
+          </select>
+        </div>
+        <div class="field"><label>Potrero / Campo</label>
+          <select id="i-potrero">
+            <option value="">Seleccionar...</option>
+            <option>Potrero Norte</option>
+            <option>Potrero Sur</option>
+            <option>Campo Central</option>
+            <option>Campo Este</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="divider-label">Montos</div>
+
+      <div class="row3">
+        <div class="field"><label>Cantidad (L) *</label><input type="number" id="i-cant" placeholder="0" min="0" step="0.001" oninput="calcIng()"></div>
+        <div class="field"><label>Precio x L ($) *</label><input type="number" id="i-precio" placeholder="0" min="0" step="0.001" oninput="calcIng()"></div>
+        <div class="field"><label>Total neto ($)</label><input type="number" id="i-neto" readonly><div class="field-hint">Automático</div></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>IVA 19% ($)</label><input type="number" id="i-iva" readonly><div class="field-hint">Automático</div></div>
+        <div class="field"><label>IE ($)</label><input type="number" id="i-ie" placeholder="0" oninput="calcIng()"></div>
+        <div class="field"><label>IEV / FEP ($)</label><input type="number" id="i-iev" placeholder="0" oninput="calcIng()"></div>
+      </div>
+      <div class="field">
+        <label>Total final ($)</label>
+        <input type="number" id="i-total" readonly style="font-size:18px;font-weight:700;color:var(--blue)">
+        <div class="field-hint">Neto + IVA + IE + IEV/FEP</div>
+      </div>
+
+      <div class="field"><label>Observaciones</label><textarea id="i-obs" placeholder="Opcional..."></textarea></div>
+
+      <button class="btn-primary" onclick="guardarIngreso()">✓ Guardar ingreso</button>
+      <button class="btn-secondary" onclick="limpiarIngreso()">Limpiar formulario</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONSUMO ═══════════ -->
+  <div id="tab-con" class="section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--green-l);font-size:20px">📤</div>
+        <div><div class="card-title">Nuevo consumo de combustible</div><div class="card-sub">Registro por máquina y potrero</div></div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Fecha *</label><input type="date" id="c-fecha"></div>
+        <div class="field"><label>Empresa *</label>
+          <select id="c-empresa">
+            <option value="">Seleccionar...</option>
+            <option>PICKERS ALIMENTOS LTDA</option>
+            <option>AGRICOLA LOS BELLOTOS</option>
+            <option>INVERSIONES ACCOR LTDA</option>
+            <option>JUAN PABLO ACUÑA</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Código máquina</label><input type="text" id="c-maquina" placeholder="Ej: MAXXUS-01"></div>
+        <div class="field"><label>Tipo máquina *</label>
+          <select id="c-tipomaq">
+            <option value="">Seleccionar...</option>
+            <option>Maxxus</option>
+            <option>C10</option>
+            <option>8030</option>
+            <option>MF</option>
+            <option>John Deere</option>
+            <option>Servicio externo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Potrero / Campo</label>
+          <select id="c-potrero">
+            <option value="">Seleccionar...</option>
+            <option>Potrero Norte</option>
+            <option>Potrero Sur</option>
+            <option>Campo Central</option>
+            <option>Campo Este</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>Cultivo</label>
+          <select id="c-cultivo">
+            <option value="">Seleccionar...</option>
+            <option>Trigo</option>
+            <option>Maíz</option>
+            <option>Soya</option>
+            <option>Raps</option>
+            <option>Cebada</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field"><label>Labor / Servicio</label>
+        <select id="c-labor">
+          <option value="">Seleccionar...</option>
+          <option>Cosecha</option>
+          <option>Siembra</option>
+          <option>Arado</option>
+          <option>Pulverización</option>
+          <option>Fumigación</option>
+          <option>Transporte</option>
+          <option>Otro</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+      <div class="divider-label">Cantidades</div>
+
+      <div class="row3">
+        <div class="field"><label>Consumo (L) *</label><input type="number" id="c-litros" placeholder="0" min="0" step="0.001" oninput="calcCon()"></div>
+        <div class="field"><label>Horas trabajadas</label><input type="number" id="c-horas" placeholder="0" min="0" step="0.1" oninput="calcCon()"></div>
+        <div class="field"><label>L / hora</label><input type="number" id="c-lhora" readonly><div class="field-hint">Automático</div></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Precio x L ($)</label><input type="number" id="c-precio" placeholder="0" oninput="calcCon()"></div>
+        <div class="field"><label>Costo total ($)</label><input type="number" id="c-costo" readonly style="font-weight:700;color:var(--green)"><div class="field-hint">Automático</div></div>
+      </div>
+
+      <div class="field"><label>Observaciones</label><textarea id="c-obs" placeholder="Opcional..."></textarea></div>
+
+      <button class="btn-primary" onclick="guardarConsumo()" style="background:var(--green)">✓ Guardar consumo</button>
+      <button class="btn-secondary" onclick="limpiarConsumo()">Limpiar formulario</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ REGISTROS ═══════════ -->
+  <div id="tab-res" class="section">
+
+    <div class="kpi-grid">
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Ingresos</div>
+        <div class="kpi-val" id="k-ning">0</div>
+        <div class="kpi-sub" id="k-ling">0 L · $0</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Consumos</div>
+        <div class="kpi-val" id="k-ncon">0</div>
+        <div class="kpi-sub" id="k-lcon">0 L · $0</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <select id="f-tipo" onchange="renderTabla()">
+        <option value="todos">Todos los registros</option>
+        <option value="ing">Solo ingresos</option>
+        <option value="con">Solo consumos</option>
+      </select>
+      <select id="f-emp" onchange="renderTabla()">
+        <option value="">Todas las empresas</option>
+        <option>PICKERS ALIMENTOS LTDA</option>
+        <option>AGRICOLA LOS BELLOTOS</option>
+        <option>INVERSIONES ACCOR LTDA</option>
+        <option>JUAN PABLO ACUÑA</option>
+      </select>
+      <select id="f-temp" onchange="renderTabla()">
+        <option value="">Toda temporada</option>
+      </select>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Tipo</th><th>Fecha</th><th>Empresa</th>
+            <th>Detalle</th><th>Temporada</th>
+            <th class="td-right">Litros</th>
+            <th class="td-right">Monto $</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--amber-l);font-size:20px">📊</div>
+        <div><div class="card-title">Exportar datos</div><div class="card-sub">Descarga CSV para pegar en Excel</div></div>
+      </div>
+      <div class="tip">💡 Abre el CSV en Excel con <strong>Datos → Desde texto/CSV</strong>, selecciona delimitador <strong>coma</strong> y codificación <strong>UTF-8</strong>.</div>
+      <div class="export-grid">
+        <button class="export-btn" onclick="exportar('ing')">
+          <div class="export-icon">📥</div>
+          <div class="export-label">Ingresos</div>
+          <div class="export-sub">Exportar ingresos CSV</div>
+        </button>
+        <button class="export-btn" onclick="exportar('con')">
+          <div class="export-icon">📤</div>
+          <div class="export-label">Consumos</div>
+          <div class="export-sub">Exportar consumos CSV</div>
+        </button>
+      </div>
+      <button class="btn-secondary" style="margin-top:10px" onclick="exportar('todos')">Exportar todo junto</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ GUÍA ═══════════ -->
+  <div id="tab-guia" class="section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--purple-l);font-size:20px">🚀</div>
+        <div><div class="card-title">Cómo publicar esta app</div><div class="card-sub">Gratis en GitHub Pages · 10 minutos</div></div>
+      </div>
+
+      <div class="tip">Esta app funciona como un único archivo HTML. Súbela a GitHub Pages y tendrás un enlace permanente que cualquier persona puede abrir desde el celular o computador, sin instalar nada.</div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Crea una cuenta en GitHub</div>
+          <div class="step-desc">Ve a <strong>github.com</strong> y regístrate gratis. Solo necesitas correo y contraseña.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Crea un repositorio nuevo</div>
+          <div class="step-desc">Haz clic en el botón verde <strong>"New"</strong>. Ponle el nombre exacto:</div>
+          <div class="step-code">combustibles</div>
+          <div class="step-desc" style="margin-top:6px">Marca la casilla <strong>"Add a README file"</strong> y haz clic en <strong>"Create repository"</strong>.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Sube el archivo app_combustibles.html</div>
+          <div class="step-desc">Dentro del repositorio, haz clic en <strong>"Add file → Upload files"</strong>. Arrastra el archivo <strong>app_combustibles.html</strong> y luego haz clic en <strong>"Commit changes"</strong>.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Renombra el archivo a index.html</div>
+          <div class="step-desc">Haz clic en el archivo subido, luego en el ícono del lápiz (editar), cambia el nombre a <strong>index.html</strong> en la parte superior y guarda con <strong>"Commit changes"</strong>.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Activa GitHub Pages</div>
+          <div class="step-desc">Ve a <strong>Settings → Pages</strong> (menú lateral). En "Source" selecciona <strong>Deploy from a branch</strong>, elige la rama <strong>main</strong> y carpeta <strong>/ (root)</strong>. Haz clic en <strong>Save</strong>.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Espera 2 minutos y copia el enlace</div>
+          <div class="step-desc">GitHub te mostrará el enlace. Será algo como:</div>
+          <div class="step-code">https://tu-usuario.github.io/combustibles/</div>
+          <div class="step-desc" style="margin-top:6px">Comparte ese enlace con los 8 usuarios. Funciona en cualquier celular o computador, sin instalar nada.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="card-header" style="margin-bottom:.75rem">
+        <div class="card-icon" style="background:var(--amber-l);font-size:18px">⚠️</div>
+        <div><div class="card-title" style="font-size:14px">Limitación importante del Camino A</div></div>
+      </div>
+      <div class="step-desc" style="margin-bottom:.75rem">Cada usuario guarda sus registros <strong>solo en su propio dispositivo</strong> (memoria del navegador). Los datos no se sincronizan entre personas automáticamente. Para consolidar, cada uno debe usar el botón <strong>Exportar CSV</strong> y enviarte el archivo para que lo pegues en el Excel central.</div>
+      <div class="step-desc">Si necesitas que todos vean los mismos datos en tiempo real, el <strong>Camino B</strong> (base de datos compartida) resuelve eso.</div>
+    </div>
+  </div>
+
+</main>
+
+<div class="footer">Inventario Combustibles · Datos guardados localmente en este navegador</div>
+
+<script>
+const MESES = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+let registros = JSON.parse(localStorage.getItem('comb_registros') || '[]');
+
+const hoy = new Date().toISOString().split('T')[0];
+document.getElementById('i-fecha').value = hoy;
+document.getElementById('c-fecha').value = hoy;
+
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  hideAlerts();
+  if (id === 'res') { updateKPIs(); renderTabla(); populateTemps(); }
+}
+
+function calcIng() {
+  const cant = +document.getElementById('i-cant').value || 0;
+  const precio = +document.getElementById('i-precio').value || 0;
+  const ie = +document.getElementById('i-ie').value || 0;
+  const iev = +document.getElementById('i-iev').value || 0;
+  const neto = cant * precio;
+  const iva = neto * 0.19;
+  document.getElementById('i-neto').value = Math.round(neto) || '';
+  document.getElementById('i-iva').value = Math.round(iva) || '';
+  document.getElementById('i-total').value = Math.round(neto + iva + ie + iev) || '';
+}
+
+function calcCon() {
+  const l = +document.getElementById('c-litros').value || 0;
+  const h = +document.getElementById('c-horas').value || 0;
+  const p = +document.getElementById('c-precio').value || 0;
+  document.getElementById('c-lhora').value = (h > 0) ? (l / h).toFixed(2) : '';
+  document.getElementById('c-costo').value = Math.round(l * p) || '';
+}
+
+function getTemporada(fecha) {
+  const d = new Date(fecha + 'T12:00:00');
+  const m = d.getMonth() + 1;
+  const a = d.getFullYear();
+  return m >= 7
+    ? String(a).slice(2) + '-' + String(a+1).slice(2)
+    : String(a-1).slice(2) + '-' + String(a).slice(2);
+}
+
+function getMes(fecha) {
+  const d = new Date(fecha + 'T12:00:00');
+  return MESES[d.getMonth()];
+}
+
+function v(id) { return document.getElementById(id).value.trim(); }
+
+function guardarIngreso() {
+  if (!v('i-fecha') || !v('i-empresa') || !v('i-tipo') || !v('i-cant') || !v('i-precio')) {
+    showError('Completa los campos obligatorios: Fecha, Empresa, Tipo combustible, Cantidad y Precio.');
+    return;
+  }
+  const reg = {
+    id: Date.now(), tipo: 'ing',
+    fecha: v('i-fecha'), mes: getMes(v('i-fecha')), temp: getTemporada(v('i-fecha')),
+    empresa: v('i-empresa'), guia: v('i-guia'), factura: v('i-factura'),
+    proveedor: v('i-proveedor'), combustible: v('i-tipo'), potrero: v('i-potrero'),
+    litros: parseFloat(v('i-cant')) || 0,
+    precio: parseFloat(v('i-precio')) || 0,
+    neto: parseFloat(document.getElementById('i-neto').value) || 0,
+    iva: parseFloat(document.getElementById('i-iva').value) || 0,
+    ie: parseFloat(v('i-ie')) || 0,
+    iev: parseFloat(v('i-iev')) || 0,
+    total: parseFloat(document.getElementById('i-total').value) || 0,
+    obs: v('i-obs')
+  };
+  registros.push(reg);
+  guardar();
+  limpiarIngreso();
+  showOk('Ingreso guardado. Total: ' + registros.filter(r=>r.tipo==='ing').length + ' ingresos registrados.');
+}
+
+function guardarConsumo() {
+  if (!v('c-fecha') || !v('c-empresa') || !v('c-tipomaq') || !v('c-litros')) {
+    showError('Completa los campos obligatorios: Fecha, Empresa, Tipo máquina y Consumo.');
+    return;
+  }
+  const reg = {
+    id: Date.now(), tipo: 'con',
+    fecha: v('c-fecha'), mes: getMes(v('c-fecha')), temp: getTemporada(v('c-fecha')),
+    empresa: v('c-empresa'), maquina: v('c-maquina'), tipoMaq: v('c-tipomaq'),
+    potrero: v('c-potrero'), cultivo: v('c-cultivo'), labor: v('c-labor'),
+    litros: parseFloat(v('c-litros')) || 0,
+    horas: parseFloat(v('c-horas')) || 0,
+    lhora: parseFloat(document.getElementById('c-lhora').value) || 0,
+    precio: parseFloat(v('c-precio')) || 0,
+    costo: parseFloat(document.getElementById('c-costo').value) || 0,
+    obs: v('c-obs')
+  };
+  registros.push(reg);
+  guardar();
+  limpiarConsumo();
+  showOk('Consumo guardado. Total: ' + registros.filter(r=>r.tipo==='con').length + ' consumos registrados.');
+}
+
+function guardar() { localStorage.setItem('comb_registros', JSON.stringify(registros)); }
+
+function limpiarIngreso() {
+  ['i-guia','i-factura','i-cant','i-precio','i-ie','i-iev','i-obs'].forEach(id => document.getElementById(id).value='');
+  ['i-neto','i-iva','i-total'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('i-fecha').value = hoy;
+}
+
+function limpiarConsumo() {
+  ['c-maquina','c-litros','c-horas','c-precio','c-obs'].forEach(id => document.getElementById(id).value='');
+  ['c-lhora','c-costo'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('c-fecha').value = hoy;
+}
+
+function updateKPIs() {
+  const ings = registros.filter(r=>r.tipo==='ing');
+  const cons = registros.filter(r=>r.tipo==='con');
+  const li = ings.reduce((a,r)=>a+r.litros,0);
+  const lc = cons.reduce((a,r)=>a+r.litros,0);
+  const gi = ings.reduce((a,r)=>a+r.total,0);
+  const gc = cons.reduce((a,r)=>a+r.costo,0);
+  document.getElementById('k-ning').textContent = ings.length;
+  document.getElementById('k-ncon').textContent = cons.length;
+  document.getElementById('k-ling').textContent = li.toLocaleString('es-CL',{maximumFractionDigits:1})+' L · $'+Math.round(gi).toLocaleString('es-CL');
+  document.getElementById('k-lcon').textContent = lc.toLocaleString('es-CL',{maximumFractionDigits:1})+' L · $'+Math.round(gc).toLocaleString('es-CL');
+}
+
+function populateTemps() {
+  const temps = [...new Set(registros.map(r=>r.temp))].sort();
+  const sel = document.getElementById('f-temp');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Toda temporada</option>' + temps.map(t=>`<option${t===cur?' selected':''}>${t}</option>`).join('');
+}
+
+function renderTabla() {
+  const tf = document.getElementById('f-tipo').value;
+  const ef = document.getElementById('f-emp').value;
+  const tef = document.getElementById('f-temp').value;
+  let rows = registros.filter(r => {
+    if (tf !== 'todos' && r.tipo !== tf) return false;
+    if (ef && r.empresa !== ef) return false;
+    if (tef && r.temp !== tef) return false;
+    return true;
+  }).sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+  const tbody = document.getElementById('tbody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Sin registros para el filtro seleccionado.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => {
+    const badge = r.tipo==='ing'
+      ? '<span class="badge badge-ing">Ingreso</span>'
+      : '<span class="badge badge-con">Consumo</span>';
+    const detalle = r.tipo==='ing'
+      ? [r.combustible, r.factura].filter(Boolean).join(' · ')
+      : [r.tipoMaq, r.labor].filter(Boolean).join(' · ');
+    const emp = r.empresa.split(' ').slice(0,2).join(' ');
+    const monto = r.tipo==='ing'
+      ? '$'+Math.round(r.total).toLocaleString('es-CL')
+      : '$'+Math.round(r.costo).toLocaleString('es-CL');
+    const litros = r.litros.toLocaleString('es-CL',{maximumFractionDigits:1});
+    return `<tr>
+      <td>${badge}</td>
+      <td>${r.fecha}</td>
+      <td style="font-size:12px">${emp}</td>
+      <td style="font-size:12px">${detalle}</td>
+      <td style="font-size:12px">${r.temp}</td>
+      <td class="td-right">${litros}</td>
+      <td class="td-right">${monto}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportar(tipo) {
+  const data = tipo==='todos' ? registros : registros.filter(r=>r.tipo===tipo);
+  if (!data.length) { showError('No hay registros para exportar.'); return; }
+
+  const ingHeader = 'FECHA,TEMPORADA,MES,EMPRESA,N° GUIA,N° FACTURA,PROVEEDOR,TIPO COMBUSTIBLE,POTRERO,CANTIDAD (L),PRECIO x L,TOTAL NETO,IVA,IE,IEV/FEP,TOTAL,OBSERVACIONES';
+  const conHeader = 'FECHA,TEMPORADA,MES,EMPRESA,MAQUINA,TIPO MAQUINA,POTRERO,CULTIVO,LABOR,LITROS,HORAS,L/HORA,PRECIO x L,COSTO TOTAL,OBSERVACIONES';
+
+  let csvIng = '', csvCon = '';
+  data.forEach(r => {
+    if (r.tipo==='ing') {
+      if (!csvIng) csvIng = ingHeader + '\n';
+      csvIng += [r.fecha,r.temp,r.mes,r.empresa,r.guia,r.factura,r.proveedor,r.combustible,r.potrero,
+                 r.litros,r.precio,r.neto,r.iva,r.ie,r.iev,r.total,r.obs||''].join(',') + '\n';
+    } else {
+      if (!csvCon) csvCon = conHeader + '\n';
+      csvCon += [r.fecha,r.temp,r.mes,r.empresa,r.maquina,r.tipoMaq,r.potrero,r.cultivo,r.labor,
+                 r.litros,r.horas,r.lhora,r.precio,r.costo,r.obs||''].join(',') + '\n';
+    }
+  });
+
+  if (tipo==='todos') {
+    const csv = (csvIng ? 'INGRESOS\n' + csvIng : '') + (csvCon ? '\nCONSUMOS\n' + csvCon : '');
+    descargar(csv, 'combustibles_completo.csv');
+  } else if (tipo==='ing') {
+    descargar(csvIng, 'ingresos.csv');
+  } else {
+    descargar(csvCon, 'consumos.csv');
+  }
+}
+
+function descargar(csv, nombre) {
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=nombre; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function showOk(msg) {
+  hideAlerts();
+  document.getElementById('alert-text').textContent = msg;
+  document.getElementById('alert-ok').classList.add('show');
+  setTimeout(() => document.getElementById('alert-ok').classList.remove('show'), 5000);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showError(msg) {
+  hideAlerts();
+  document.getElementById('alert-err-text').textContent = msg;
+  document.getElementById('alert-err').classList.add('show');
+  setTimeout(() => document.getElementById('alert-err').classList.remove('show'), 5000);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function hideAlerts() {
+  document.getElementById('alert-ok').classList.remove('show');
+  document.getElementById('alert-err').classList.remove('show');
+}
+</script>
+</body>
+</html>
