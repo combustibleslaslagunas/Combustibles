@@ -37,7 +37,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 .app-logo{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap}
 .app-logo span{color:var(--blue)}
 .nav-tabs{display:flex;gap:2px;margin-left:auto}
-.nav-tabs button{padding:6px 14px;border:none;background:transparent;border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;font-weight:400;transition:all .15s}
+.nav-tabs button{padding:6px 10px;border:none;background:transparent;border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;font-weight:400;transition:all .15s}
 .nav-tabs button.active{background:var(--blue-l);color:var(--blue);font-weight:600}
 .nav-tabs button:hover:not(.active){background:var(--bg2)}
 
@@ -136,6 +136,25 @@ tbody tr:hover{background:var(--bg2)}
 
 /* FOOTER */
 .footer{text-align:center;font-size:12px;color:var(--text3);padding:2rem 1rem;margin-top:1rem}
+
+/* CONFIG LIST EDITOR */
+.cfg-list-item{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cfg-list-item input{flex:1;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;background:var(--bg);color:var(--text)}
+.cfg-list-item input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+.cfg-del{width:32px;height:32px;border:1px solid var(--red-l);border-radius:var(--radius-sm);background:var(--red-l);color:var(--red);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:300}
+.cfg-del:hover{background:var(--red);color:#fff}
+.cfg-add{width:100%;padding:8px;border:1px dashed var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);font-size:14px;cursor:pointer;margin-top:4px;transition:all .15s}
+.cfg-add:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.cfg-section{margin-bottom:1.25rem}
+.cfg-section-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cfg-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;flex-shrink:0}
+.cfg-badge-blue{background:var(--blue-l);color:var(--blue)}
+.cfg-badge-green{background:var(--green-l);color:var(--green)}
+.cfg-badge-amber{background:var(--amber-l);color:var(--amber)}
+.cfg-badge-purple{background:var(--purple-l);color:var(--purple)}
+.cfg-saved{display:none;padding:8px 12px;background:var(--green-l);border:1px solid var(--green);border-radius:var(--radius-sm);color:var(--green);font-size:13px;margin-bottom:1rem;text-align:center}
+.cfg-saved.show{display:block}
+
 </style>
 </head>
 <body>
@@ -147,6 +166,7 @@ tbody tr:hover{background:var(--bg2)}
       <button class="active" onclick="showTab('ing',this)">Ingreso</button>
       <button onclick="showTab('con',this)">Consumo</button>
       <button onclick="showTab('res',this)">Registros</button>
+      <button onclick="showTab('cfg',this)">Config</button>
       <button onclick="showTab('guia',this)">Guía</button>
     </div>
   </div>
@@ -169,12 +189,8 @@ tbody tr:hover{background:var(--bg2)}
         <div class="field"><label>Fecha factura *</label><input type="date" id="i-fecha"></div>
         <div class="field"><label>Empresa *</label>
           <select id="i-empresa">
-            <option value="">Seleccionar...</option>
-            <option>PICKERS ALIMENTOS LTDA</option>
-            <option>AGRICOLA LOS BELLOTOS</option>
-            <option>INVERSIONES ACCOR LTDA</option>
-            <option>JUAN PABLO ACUÑA</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
       </div>
 
@@ -186,33 +202,19 @@ tbody tr:hover{background:var(--bg2)}
       <div class="field"><label>Proveedor</label>
         <select id="i-proveedor">
           <option value="">Seleccionar...</option>
-          <option>ESTACION DE SERVICIOS MIGUEL ARMANDO CARVACHO</option>
-          <option>COMERCIAL Y DISTRIBUIDORA DE COMBUSTIBLE RABALME LIMITADA</option>
-          <option>COPEC</option>
-          <option>SHELL</option>
-          <option>OTRO</option>
         </select>
       </div>
 
       <div class="row2">
         <div class="field"><label>Tipo combustible *</label>
           <select id="i-tipo">
-            <option value="">Seleccionar...</option>
-            <option>DIESEL</option>
-            <option>GASOLINA 93</option>
-            <option>GASOLINA 95</option>
-            <option>GASOLINA 97</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
         <div class="field"><label>Potrero / Campo</label>
           <select id="i-potrero">
-            <option value="">Seleccionar...</option>
-            <option>Potrero Norte</option>
-            <option>Potrero Sur</option>
-            <option>Campo Central</option>
-            <option>Campo Este</option>
-            <option>Otro</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
       </div>
 
@@ -254,12 +256,8 @@ tbody tr:hover{background:var(--bg2)}
         <div class="field"><label>Fecha *</label><input type="date" id="c-fecha"></div>
         <div class="field"><label>Empresa *</label>
           <select id="c-empresa">
-            <option value="">Seleccionar...</option>
-            <option>PICKERS ALIMENTOS LTDA</option>
-            <option>AGRICOLA LOS BELLOTOS</option>
-            <option>INVERSIONES ACCOR LTDA</option>
-            <option>JUAN PABLO ACUÑA</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
       </div>
 
@@ -267,51 +265,27 @@ tbody tr:hover{background:var(--bg2)}
         <div class="field"><label>Código máquina</label><input type="text" id="c-maquina" placeholder="Ej: MAXXUS-01"></div>
         <div class="field"><label>Tipo máquina *</label>
           <select id="c-tipomaq">
-            <option value="">Seleccionar...</option>
-            <option>Maxxus</option>
-            <option>C10</option>
-            <option>8030</option>
-            <option>MF</option>
-            <option>John Deere</option>
-            <option>Servicio externo</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
       </div>
 
       <div class="row2">
         <div class="field"><label>Potrero / Campo</label>
           <select id="c-potrero">
-            <option value="">Seleccionar...</option>
-            <option>Potrero Norte</option>
-            <option>Potrero Sur</option>
-            <option>Campo Central</option>
-            <option>Campo Este</option>
-            <option>Otro</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
         <div class="field"><label>Cultivo</label>
           <select id="c-cultivo">
-            <option value="">Seleccionar...</option>
-            <option>Trigo</option>
-            <option>Maíz</option>
-            <option>Soya</option>
-            <option>Raps</option>
-            <option>Cebada</option>
-            <option>Otro</option>
-          </select>
+          <option value="">Seleccionar...</option>
+        </select>
         </div>
       </div>
 
       <div class="field"><label>Labor / Servicio</label>
         <select id="c-labor">
           <option value="">Seleccionar...</option>
-          <option>Cosecha</option>
-          <option>Siembra</option>
-          <option>Arado</option>
-          <option>Pulverización</option>
-          <option>Fumigación</option>
-          <option>Transporte</option>
-          <option>Otro</option>
         </select>
       </div>
 
@@ -358,12 +332,7 @@ tbody tr:hover{background:var(--bg2)}
         <option value="con">Solo consumos</option>
       </select>
       <select id="f-emp" onchange="renderTabla()">
-        <option value="">Todas las empresas</option>
-        <option>PICKERS ALIMENTOS LTDA</option>
-        <option>AGRICOLA LOS BELLOTOS</option>
-        <option>INVERSIONES ACCOR LTDA</option>
-        <option>JUAN PABLO ACUÑA</option>
-      </select>
+          </select>
       <select id="f-temp" onchange="renderTabla()">
         <option value="">Toda temporada</option>
       </select>
@@ -402,6 +371,82 @@ tbody tr:hover{background:var(--bg2)}
         </button>
       </div>
       <button class="btn-secondary" style="margin-top:10px" onclick="exportar('todos')">Exportar todo junto</button>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ CONFIG ═══════════ -->
+  <div id="tab-cfg" class="section">
+    <div id="cfg-saved" class="cfg-saved">✓ Cambios guardados. Los formularios ya usan las nuevas listas.</div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--purple-l);font-size:20px">⚙️</div>
+        <div><div class="card-title">Configuración de listas</div><div class="card-sub">Edita, agrega o elimina opciones de los formularios</div></div>
+      </div>
+
+      <!-- EMPRESAS -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-blue">E</span>Empresas</div>
+        <div id="cfg-empresas"></div>
+        <button class="cfg-add" onclick="agregarItem('empresas')">+ Agregar empresa</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- POTREROS -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-green">P</span>Potreros / Campos</div>
+        <div id="cfg-potreros"></div>
+        <button class="cfg-add" onclick="agregarItem('potreros')">+ Agregar potrero o campo</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- TIPO MAQUINA -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-amber">M</span>Tipos de máquina</div>
+        <div id="cfg-maquinas"></div>
+        <button class="cfg-add" onclick="agregarItem('maquinas')">+ Agregar tipo de máquina</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- CULTIVOS -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-green">C</span>Cultivos</div>
+        <div id="cfg-cultivos"></div>
+        <button class="cfg-add" onclick="agregarItem('cultivos')">+ Agregar cultivo</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- LABORES -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-purple">L</span>Labores / Servicios</div>
+        <div id="cfg-labores"></div>
+        <button class="cfg-add" onclick="agregarItem('labores')">+ Agregar labor o servicio</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- PROVEEDORES -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-blue">V</span>Proveedores</div>
+        <div id="cfg-proveedores"></div>
+        <button class="cfg-add" onclick="agregarItem('proveedores')">+ Agregar proveedor</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- TIPO COMBUSTIBLE -->
+      <div class="cfg-section">
+        <div class="cfg-section-title"><span class="cfg-badge cfg-badge-amber">T</span>Tipos de combustible</div>
+        <div id="cfg-tipos"></div>
+        <button class="cfg-add" onclick="agregarItem('tipos')">+ Agregar tipo de combustible</button>
+      </div>
+
+      <button class="btn-primary" onclick="guardarConfig()" style="margin-top:0.5rem">✓ Guardar todos los cambios</button>
     </div>
   </div>
 
@@ -497,6 +542,7 @@ function showTab(id, btn) {
   if (btn) btn.classList.add('active');
   hideAlerts();
   if (id === 'res') { updateKPIs(); renderTabla(); populateTemps(); }
+  if (id === 'cfg') { renderTodasListas(); }
 }
 
 function calcIng() {
@@ -713,6 +759,92 @@ function hideAlerts() {
   document.getElementById('alert-ok').classList.remove('show');
   document.getElementById('alert-err').classList.remove('show');
 }
+
+// ── CONFIGURACIÓN ────────────────────────────────────────────────────────
+const LISTAS_DEFAULT = {
+  empresas:    ['PICKERS ALIMENTOS LTDA','AGRICOLA LOS BELLOTOS','INVERSIONES ACCOR LTDA','JUAN PABLO ACUÑA'],
+  potreros:    ['Potrero Norte','Potrero Sur','Campo Central','Campo Este','Otro'],
+  maquinas:    ['Maxxus','C10','8030','MF','John Deere','Servicio externo'],
+  cultivos:    ['Trigo','Maíz','Soya','Raps','Cebada','Otro'],
+  labores:     ['Cosecha','Siembra','Arado','Pulverización','Fumigación','Transporte','Otro'],
+  proveedores: ['ESTACION DE SERVICIOS MIGUEL ARMANDO CARVACHO','COMERCIAL Y DISTRIBUIDORA DE COMBUSTIBLE RABALME LIMITADA','COPEC','SHELL','OTRO'],
+  tipos:       ['DIESEL','GASOLINA 93','GASOLINA 95','GASOLINA 97']
+};
+
+let listas = JSON.parse(localStorage.getItem('comb_listas') || 'null') || JSON.parse(JSON.stringify(LISTAS_DEFAULT));
+
+function renderLista(key) {
+  const container = document.getElementById('cfg-' + key);
+  container.innerHTML = '';
+  listas[key].forEach((val, idx) => {
+    const div = document.createElement('div');
+    div.className = 'cfg-list-item';
+    div.innerHTML = `
+      <input type="text" value="${val.replace(/"/g,'&quot;')}" oninput="listas['${key}'][${idx}]=this.value">
+      <button class="cfg-del" onclick="eliminarItem('${key}',${idx})" title="Eliminar">×</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderTodasListas() {
+  Object.keys(listas).forEach(k => renderLista(k));
+}
+
+function agregarItem(key) {
+  listas[key].push('');
+  renderLista(key);
+  const inputs = document.querySelectorAll(`#cfg-${key} input`);
+  inputs[inputs.length - 1].focus();
+}
+
+function eliminarItem(key, idx) {
+  if (listas[key].length <= 1) { showError('Debe haber al menos una opción en la lista.'); return; }
+  listas[key].splice(idx, 1);
+  renderLista(key);
+}
+
+function guardarConfig() {
+  // Limpiar valores vacíos
+  Object.keys(listas).forEach(k => {
+    listas[k] = listas[k].map(v => v.trim()).filter(v => v.length > 0);
+    if (listas[k].length === 0) listas[k] = LISTAS_DEFAULT[k];
+  });
+  localStorage.setItem('comb_listas', JSON.stringify(listas));
+  renderTodasListas();
+  poblarSelects();
+  const el = document.getElementById('cfg-saved');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function poblarSelect(selectId, key, placeholder=true) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const cur = sel.value;
+  let prefix = '';
+  if (placeholder === true) prefix = '<option value="">Seleccionar...</option>';
+  else if (typeof placeholder === 'string') prefix = `<option value="">${placeholder}</option>`;
+  sel.innerHTML = prefix + listas[key].map(v => `<option${v===cur?' selected':''}>${v}</option>`).join('');
+}
+
+function poblarSelects() {
+  poblarSelect('i-empresa',    'empresas');
+  poblarSelect('c-empresa',    'empresas');
+  poblarSelect('f-emp',        'empresas', 'Todas las empresas');
+  poblarSelect('i-potrero',    'potreros');
+  poblarSelect('c-potrero',    'potreros');
+  poblarSelect('c-tipomaq',    'maquinas');
+  poblarSelect('c-cultivo',    'cultivos');
+  poblarSelect('c-labor',      'labores');
+  poblarSelect('i-proveedor',  'proveedores');
+  poblarSelect('i-tipo',       'tipos');
+}
+
+// Inicializar config
+renderTodasListas();
+poblarSelects();
+
 </script>
 </body>
 </html>
